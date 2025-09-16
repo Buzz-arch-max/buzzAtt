@@ -1,8 +1,9 @@
 services:
   - type: web
     name: buzzatt-api
-    env: docker
-    dockerfilePath: ./Dockerfile
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
     envVars:
       - key: DATABASE_URL
