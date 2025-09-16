@@ -11,6 +11,15 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="BuzzAtt API")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
+@app.get("/health")
+async def health_check(db: Session = Depends(get_db)):
+    try:
+        # Try to make a simple query
+        db.execute("SELECT 1")
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+
 @app.post("/auth/login", response_model=schemas.LoginResponse)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),

@@ -1,5 +1,5 @@
-from database import Base, engine
-from models import User, AttendanceSession, ProfileType
+from .database import Base, engine
+from .models import User, AttendanceSession, ProfileType
 
 def init_database():
     print("Creating database tables...")
