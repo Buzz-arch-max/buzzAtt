@@ -1,27 +1,32 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  api:
+  backend:
     build: .
-    ports:
-      - "8001:8001"
+    image: buzzatt-backend:latest
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db/buzzatt
-      - SECRET_KEY=your-secret-key-for-testing
-      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/buzzatt
+    ports:
+      - "8090:8090"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
-    image: postgres:13
-    ports:
-      - "5432:5432"
+    image: postgres:15
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=buzzatt
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: buzzatt
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d buzzatt"]
+      interval: 5s
+      retries: 5
+      timeout: 5s
 
 volumes:
-  postgres_data:
+  db_data:
